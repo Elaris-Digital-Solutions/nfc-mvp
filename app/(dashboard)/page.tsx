@@ -1,287 +1,301 @@
 'use client'
 
 import { useState } from 'react'
-import { Palette, User, Heart, Share2, LogOut, Home } from 'lucide-react'
+import { Home, Palette, Save, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sidebar } from '@/components/shared/sidebar'
+import { useAuth } from '@/lib/auth-context'
+import { TEMPLATES } from '@/lib/constants'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
-const TEMPLATES = [
-  {
-    id: 'minimal-black',
-    name: 'Minimal Black',
-    category: 'CORPORATIVO',
-    description: 'Sobria, nítida y de alto contraste.',
-    bgColor: 'bg-black',
-    textColor: 'text-white',
-    borderColor: 'border-gray-800',
-  },
-  {
-    id: 'glass-dark',
-    name: 'Glass Dark',
-    category: 'MODERNO',
-    description: 'Profundidad translúcida con brillo suave.',
-    bgColor: 'bg-gray-900',
-    textColor: 'text-white',
-    borderColor: 'border-blue-500',
-  },
-  {
-    id: 'mono-sharp',
-    name: 'Mono Sharp',
-    category: 'IMPACTO',
-    description: 'Editorial fuerte y geometría limpia.',
-    bgColor: 'bg-gray-950',
-    textColor: 'text-white',
-    borderColor: 'border-white',
-    isSelected: true,
-  },
-  {
-    id: 'soft-light',
-    name: 'Soft Light',
-    category: 'LIFESTYLE',
-    description: 'Luminoso, cercano y elegante.',
-    bgColor: 'bg-gray-100',
-    textColor: 'text-black',
-    borderColor: 'border-gray-300',
-  },
-]
+type DashboardSection = 'inicio' | 'perfil' | 'botones' | 'plantilla'
 
-function PlantillasSection() {
-  return (
+export default function DashboardPage() {
+  const { user, updateProfile } = useAuth()
+  const [activeSection, setActiveSection] = useState<DashboardSection>('inicio')
+  const [profileForm, setProfileForm] = useState({
+    name: user?.name || '',
+    title: user?.title || '',
+    company: user?.company || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    whatsapp: user?.whatsapp || '',
+    bio: user?.bio || '',
+  })
+  const [links, setLinks] = useState(
+    user?.links?.length
+      ? user.links
+      : [
+          { id: '1', title: 'Sigueme en Instagram', url: '', icon: 'instagram' },
+          { id: '2', title: 'Conectemos en Linkedin', url: '', icon: 'linkedin' },
+          { id: '3', title: 'Elaris Digital Solutions', url: '', icon: 'website' },
+        ],
+  )
+
+  const handleProfileSave = () => {
+    updateProfile(profileForm)
+  }
+
+  const handleTemplateSelect = (templateId: string) => {
+    updateProfile({ selectedTemplate: templateId as any })
+  }
+
+  const updateLink = (id: string, field: 'title' | 'url' | 'icon', value: string) => {
+    setLinks((prev) => prev.map((link) => (link.id === id ? { ...link, [field]: value } : link)))
+  }
+
+  const addLink = () => {
+    if (links.length >= 6) return
+    setLinks((prev) => [...prev, { id: crypto.randomUUID(), title: '', url: '', icon: 'website' }])
+  }
+
+  const saveLinks = () => {
+    updateProfile({ links })
+  }
+
+  const InicioSection = (
     <div className="space-y-8">
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <Palette className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs font-medium text-muted-foreground tracking-widest uppercase">
-            Direccion Visual
-          </span>
-        </div>
-        <div className="flex items-start justify-between">
-          <h1 className="text-5xl font-black tracking-tighter">PLANTILLAS</h1>
-          <div className="text-right border border-border/20 rounded-lg px-4 py-2">
-            <p className="text-xs text-muted-foreground uppercase tracking-widest">Plantilla Activa</p>
-            <p className="text-sm font-semibold">Mono Sharp</p>
-          </div>
-        </div>
-        <p className="text-lg text-muted-foreground mt-4 max-w-2xl">
-          Elige una identidad visual para tu tarjeta. Cada plantilla cambia ritmo, contraste y
-          personalidad de tu perfil público.
+      <div>
+        <h1 className="text-5xl font-black tracking-tight">Panel de usuario</h1>
+        <p className="mt-2 text-muted-foreground text-2xl">
+          Gestiona tu perfil, enlaces y plantilla desde el menu lateral.
         </p>
       </div>
 
-      <div className="grid grid-cols-4 gap-6">
-        {TEMPLATES.map((template) => (
-          <div
-            key={template.id}
-            className={`rounded-xl border-2 p-6 space-y-4 ${
-              template.isSelected
-                ? 'border-white bg-gray-900/50'
-                : 'border-gray-800 hover:border-gray-700'
-            }`}
-          >
-            {/* Preview Card */}
-            <div className={`${template.bgColor} rounded-lg p-4 space-y-3`}>
-              <div className="w-12 h-12 rounded-full bg-gray-500"></div>
-              <div className="space-y-1">
-                <p className={`font-semibold text-sm ${template.textColor}`}>Fabrizio Bussalleu</p>
-                <p className={`text-xs ${template.textColor} opacity-70`}>Consultor Comercial</p>
-              </div>
-              <div className="space-y-2 pt-2">
-                <button className={`w-full py-2 px-3 rounded ${template.bgColor === 'bg-black' ? 'bg-gray-700' : template.bgColor === 'bg-gray-100' ? 'bg-gray-300' : 'bg-gray-800'} text-xs font-medium`}>
-                  LinkedIn
-                </button>
-                <button className={`w-full py-2 px-3 rounded ${template.bgColor === 'bg-black' ? 'bg-gray-700' : template.bgColor === 'bg-gray-100' ? 'bg-gray-300' : 'bg-gray-800'} text-xs font-medium`}>
-                  WhatsApp
-                </button>
-              </div>
-            </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="rounded-2xl border border-border/60 p-6">
+          <h3 className="text-4xl font-bold">Perfil</h3>
+          <p className="text-muted-foreground mt-2 text-xl">Actualiza datos profesionales y contacto.</p>
+        </div>
+        <div className="rounded-2xl border border-border/60 p-6">
+          <h3 className="text-4xl font-bold">Botones</h3>
+          <p className="text-muted-foreground mt-2 text-xl">Configura enlaces y orden de acciones.</p>
+        </div>
+        <div className="rounded-2xl border border-border/60 p-6">
+          <h3 className="text-4xl font-bold">Plantilla</h3>
+          <p className="text-muted-foreground mt-2 text-xl">Elige el estilo visual de tu tarjeta.</p>
+        </div>
+      </div>
 
-            {/* Info */}
-            <div className="space-y-3">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
-                  {template.category}
-                </p>
-                <h3 className="text-lg font-bold">{template.name}</h3>
-                <p className="text-sm text-muted-foreground">{template.description}</p>
+      <div className="rounded-2xl border border-border/60 p-6">
+        <p className="text-sm tracking-[0.2em] uppercase font-semibold">Siguiente paso</p>
+        <p className="text-muted-foreground mt-3 text-xl">
+          Completa tu perfil y agrega al menos un boton para publicar una tarjeta utilizable.
+        </p>
+      </div>
+    </div>
+  )
+
+  const PerfilSection = (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-5xl font-black tracking-tight">Mi perfil</h1>
+        <p className="mt-2 text-muted-foreground text-2xl">Configura la informacion publica y de contacto.</p>
+      </div>
+
+      <div className="rounded-2xl border border-border/60 p-6 space-y-6">
+        <p className="text-sm tracking-[0.2em] uppercase font-semibold">Identidad visual</p>
+        <div className="relative rounded-xl border border-border/60 p-4 md:p-5 pb-12 overflow-visible">
+          <div className="relative h-36 md:h-44 w-full rounded-xl border border-slate-700/60 bg-gradient-to-r from-slate-300 via-slate-700 to-slate-900 shadow-inner">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="absolute z-10 bottom-3 left-28 md:left-36 h-9 rounded-md border-border/70 bg-background/95 text-foreground hover:bg-background"
+            >
+              Subir foto de perfil
+            </Button>
+
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="absolute z-10 bottom-3 right-3 h-9 rounded-md border-border/70 bg-background/95 text-foreground hover:bg-background"
+            >
+              Agregar foto de portada
+            </Button>
+          </div>
+
+          <Avatar className="absolute z-20 -bottom-0 left-12 h-24 w-24 rounded-2xl border-4 border-background shadow-xl">
+            <AvatarImage src={user?.profileImage} />
+            <AvatarFallback className="rounded-2xl text-xl font-bold bg-zinc-200 text-zinc-900">
+              {user?.name?.charAt(0) || 'U'}
+            </AvatarFallback>
+          </Avatar>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-border/60 p-6 space-y-6">
+        <p className="text-sm tracking-[0.2em] uppercase font-semibold">Informacion de contacto</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">Nombre completo</Label>
+            <Input
+              id="name"
+              value={profileForm.name}
+              onChange={(e) => setProfileForm((prev) => ({ ...prev, name: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="title">Cargo</Label>
+            <Input
+              id="title"
+              value={profileForm.title}
+              onChange={(e) => setProfileForm((prev) => ({ ...prev, title: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="company">Empresa</Label>
+            <Input
+              id="company"
+              value={profileForm.company}
+              onChange={(e) => setProfileForm((prev) => ({ ...prev, company: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              value={profileForm.email}
+              onChange={(e) => setProfileForm((prev) => ({ ...prev, email: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="phone">Telefono</Label>
+            <Input
+              id="phone"
+              value={profileForm.phone}
+              onChange={(e) => setProfileForm((prev) => ({ ...prev, phone: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="whatsapp">WhatsApp</Label>
+            <Input
+              id="whatsapp"
+              value={profileForm.whatsapp}
+              onChange={(e) => setProfileForm((prev) => ({ ...prev, whatsapp: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="bio">Biografia</Label>
+            <textarea
+              id="bio"
+              value={profileForm.bio}
+              onChange={(e) => setProfileForm((prev) => ({ ...prev, bio: e.target.value }))}
+              rows={4}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-base text-foreground"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-end">
+        <Button onClick={handleProfileSave} className="px-8">
+          <Save className="w-4 h-4 mr-2" />
+          Guardar cambios
+        </Button>
+      </div>
+    </div>
+  )
+
+  const BotonesSection = (
+    <div className="space-y-8">
+      <div className="rounded-2xl border border-border/60 p-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-5xl font-black tracking-tight">Mis botones</h1>
+          <p className="mt-2 text-muted-foreground text-2xl">Gestiona los botones que se muestran en tu perfil publico.</p>
+        </div>
+        <span className="text-sm border border-border rounded-md px-3 py-1 font-semibold">{links.length} / 6</span>
+      </div>
+
+      <div className="space-y-4">
+        {links.map((link, idx) => (
+          <div key={link.id} className="rounded-2xl border border-border/60 p-6 space-y-4">
+            <p className="text-sm tracking-[0.2em] uppercase font-semibold">Boton #{idx + 1}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Etiqueta</Label>
+                <Input value={link.title} onChange={(e) => updateLink(link.id, 'title', e.target.value)} />
               </div>
-              <Button
-                variant={template.isSelected ? 'default' : 'outline'}
-                size="sm"
-                className="w-full"
-              >
-                {template.isSelected ? 'SELECCIONADA' : 'APLICAR'}
-              </Button>
+              <div className="space-y-2">
+                <Label>URL</Label>
+                <Input value={link.url} onChange={(e) => updateLink(link.id, 'url', e.target.value)} />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label>Icono</Label>
+                <select
+                  value={link.icon}
+                  onChange={(e) => updateLink(link.id, 'icon', e.target.value)}
+                  className="w-full h-10 rounded-md border border-input bg-background px-3"
+                >
+                  <option value="instagram">instagram</option>
+                  <option value="linkedin">linkedin</option>
+                  <option value="whatsapp">whatsapp</option>
+                  <option value="website">website</option>
+                </select>
+              </div>
             </div>
           </div>
         ))}
       </div>
+
+      <div className="sticky bottom-4 rounded-2xl border border-border/60 bg-background/90 backdrop-blur p-4 flex items-center justify-between gap-3">
+        <Button variant="outline" onClick={addLink}>+ Anadir boton</Button>
+        <Button onClick={saveLinks} className="px-8">
+          <Save className="w-4 h-4 mr-2" />
+          Guardar cambios
+        </Button>
+      </div>
     </div>
   )
-}
 
-function MiPerfilSection() {
-  return (
+  const PlantillaSection = (
     <div className="space-y-8">
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <User className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs font-medium text-muted-foreground tracking-widest uppercase">
-            Tu Perfil
-          </span>
+      <div>
+        <div className="flex items-center gap-2 mb-2">
+          <Palette className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs font-medium text-muted-foreground tracking-widest uppercase">Direccion visual</span>
         </div>
-        <h1 className="text-5xl font-black tracking-tighter">MI PERFIL</h1>
-        <p className="text-lg text-muted-foreground mt-4">
-          Personaliza la información que aparece en tu tarjeta pública.
-        </p>
+        <h1 className="text-5xl font-black tracking-tight">Plantillas</h1>
       </div>
 
-      <div className="grid grid-cols-2 gap-8 max-w-2xl">
-        <div className="space-y-3">
-          <label className="text-sm font-medium">Nombre Completo</label>
-          <input
-            type="text"
-            defaultValue="Fabrizio Bussalleu"
-            className="w-full px-4 py-2 bg-gray-900 border border-gray-800 rounded-lg text-white"
-          />
-        </div>
-        <div className="space-y-3">
-          <label className="text-sm font-medium">Cargo</label>
-          <input
-            type="text"
-            defaultValue="Gerente"
-            className="w-full px-4 py-2 bg-gray-900 border border-gray-800 rounded-lg text-white"
-          />
-        </div>
-        <div className="space-y-3 col-span-2">
-          <label className="text-sm font-medium">Empresa</label>
-          <input
-            type="text"
-            defaultValue="ELARIS S.A.C.S"
-            className="w-full px-4 py-2 bg-gray-900 border border-gray-800 rounded-lg text-white"
-          />
-        </div>
-        <div className="space-y-3 col-span-2">
-          <label className="text-sm font-medium">Descripción</label>
-          <textarea
-            defaultValue="Arquitectura de Producto e Integración de Sistemas | Full Stack Developer | Cofundador en Elaris Digital Solutions"
-            rows={4}
-            className="w-full px-4 py-2 bg-gray-900 border border-gray-800 rounded-lg text-white"
-          />
-        </div>
-        <Button className="col-span-2">Guardar Cambios</Button>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {Object.entries(TEMPLATES).map(([id, template]) => {
+          const isSelected = user?.selectedTemplate === id
+          return (
+            <div key={id} className={`rounded-2xl border p-6 ${isSelected ? 'border-white' : 'border-border/60'}`}>
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{template.category}</p>
+              <h3 className="text-2xl font-bold mt-1">{template.name}</h3>
+              <p className="text-muted-foreground mt-2">{template.description}</p>
+              <Button onClick={() => handleTemplateSelect(id)} className="mt-5 w-full" variant={isSelected ? 'default' : 'outline'}>
+                {isSelected ? 'Seleccionada' : 'Aplicar'}
+              </Button>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
-}
-
-function MisTarjetasSection() {
-  return (
-    <div className="space-y-8">
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <Share2 className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs font-medium text-muted-foreground tracking-widest uppercase">
-            Tu Tarjeta Digital
-          </span>
-        </div>
-        <h1 className="text-5xl font-black tracking-tighter">MI TARJETA</h1>
-      </div>
-
-      {/* Card Preview */}
-      <div className="max-w-md mx-auto">
-        <div className="relative rounded-2xl overflow-hidden bg-black pt-20 pb-8 px-6 space-y-6">
-          {/* Background effect */}
-          <div className="absolute inset-0 opacity-30">
-            <div className="absolute inset-0 bg-gradient-to-b from-blue-900/20 via-transparent to-transparent"></div>
-          </div>
-
-          <div className="relative z-10 space-y-6 text-center">
-            {/* Avatar */}
-            <div className="flex justify-center">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gray-400 to-gray-600"></div>
-            </div>
-
-            {/* Name */}
-            <div className="space-y-2">
-              <h2 className="text-3xl font-black text-white tracking-tight">FABRIZIO BUSSALLEU</h2>
-              <p className="text-lg text-gray-400">Gerente</p>
-              <p className="text-sm text-gray-500">ELARIS S.A.C.S</p>
-            </div>
-
-            {/* Description */}
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Arquitectura de Producto e Integración de Sistemas | Full Stack Developer | Cofundador en Elaris Digital Solutions
-            </p>
-
-            {/* Action Button */}
-            <Button className="w-full bg-white text-black hover:bg-gray-100">
-              ↓ SINCRONIZAR CONTACTO
-            </Button>
-
-            {/* Social Links */}
-            <div className="space-y-3 pt-4">
-              <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-gray-800 hover:border-gray-700 hover:bg-gray-900/50 transition">
-                <span className="text-lg">📷</span>
-                <span className="text-sm">Sígueme en Instagram</span>
-                <span className="ml-auto text-gray-600">↗</span>
-              </button>
-              <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-gray-800 hover:border-gray-700 hover:bg-gray-900/50 transition">
-                <span className="text-lg">💼</span>
-                <span className="text-sm">Conectemos en LinkedIn</span>
-                <span className="ml-auto text-gray-600">↗</span>
-              </button>
-              <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-gray-800 hover:border-gray-700 hover:bg-gray-900/50 transition">
-                <span className="text-lg">🔗</span>
-                <span className="text-sm">Elaris Digital Solutions</span>
-                <span className="ml-auto text-gray-600">↗</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export default function DashboardPage() {
-  const [activeSection, setActiveSection] = useState('plantilla')
 
   return (
     <div className="flex h-screen">
       <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
-      <main className="flex-1 overflow-auto bg-background p-8">
+      <main className="flex-1 overflow-auto bg-background p-6 md:p-10">
         <div className="max-w-7xl mx-auto">
           {activeSection === 'inicio' && (
-          <div className="space-y-8">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Home className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs font-medium text-muted-foreground tracking-widest uppercase">
-                  Panel Principal
-                </span>
+            <div>
+              <div className="flex items-center gap-2 mb-6 text-muted-foreground">
+                <Home className="w-4 h-4" />
+                <span className="text-xs uppercase tracking-[0.2em]">Panel</span>
               </div>
-              <h1 className="text-5xl font-black tracking-tighter">BIENVENIDO</h1>
+              {InicioSection}
             </div>
-            <div className="grid grid-cols-3 gap-6">
-              <div className="rounded-lg border border-gray-800 p-6 space-y-2">
-                <p className="text-sm text-muted-foreground">Plantillas</p>
-                <p className="text-3xl font-bold">4</p>
-              </div>
-              <div className="rounded-lg border border-gray-800 p-6 space-y-2">
-                <p className="text-sm text-muted-foreground">Tu Tarjeta</p>
-                <p className="text-3xl font-bold">Activa</p>
-              </div>
-              <div className="rounded-lg border border-gray-800 p-6 space-y-2">
-                <p className="text-sm text-muted-foreground">Enlaces</p>
-                <p className="text-3xl font-bold">3</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeSection === 'plantilla' && <PlantillasSection />}
-        {activeSection === 'perfil' && <MiPerfilSection />}
-        {activeSection === 'tarjeta' && <MisTarjetasSection />}
+          )}
+          {activeSection === 'perfil' && PerfilSection}
+          {activeSection === 'botones' && BotonesSection}
+          {activeSection === 'plantilla' && PlantillaSection}
         </div>
       </main>
     </div>

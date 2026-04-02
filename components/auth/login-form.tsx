@@ -2,40 +2,22 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-const loginSchema = z.object({
-  email: z.string().email('Email inválido'),
-  password: z.string().min(1, 'La contraseña es requerida'),
-})
-
-type LoginForm = z.infer<typeof loginSchema>
-
 export function LoginForm() {
   const { login, isLoading } = useAuth()
-  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
-  })
-
-  const onSubmit = async (data: LoginForm) => {
-    setError(null)
-    try {
-      await login(data.email, data.password)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al iniciar sesión')
-    }
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    await login(email, password)
+    router.push('/dashboard')
   }
 
   return (
@@ -46,12 +28,7 @@ export function LoginForm() {
           <p className="text-muted-foreground">Accede a tu cuenta</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {error && (
-            <div className="p-4 rounded-lg bg-destructive/10 text-destructive text-sm">
-              {error}
-            </div>
-          )}
+        <form onSubmit={onSubmit} className="space-y-4">
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -59,12 +36,10 @@ export function LoginForm() {
               id="email"
               type="email"
               placeholder="tu@email.com"
-              {...register('email')}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
             />
-            {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
-            )}
           </div>
 
           <div className="space-y-2">
@@ -73,12 +48,10 @@ export function LoginForm() {
               id="password"
               type="password"
               placeholder="••••••••"
-              {...register('password')}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
             />
-            {errors.password && (
-              <p className="text-sm text-destructive">{errors.password.message}</p>
-            )}
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>
@@ -89,7 +62,7 @@ export function LoginForm() {
         <div className="space-y-3 text-center text-sm">
           <p>
             ¿No tienes cuenta?{' '}
-            <Link href="/auth/signup" className="font-semibold hover:underline text-primary">
+            <Link href="/signup" className="font-semibold hover:underline text-primary">
               Crear cuenta
             </Link>
           </p>

@@ -28,12 +28,14 @@ export default function Home() {
             Frontend migrado a stack estilo Lovable. Vite + React + Tailwind + rutas simples para iterar UI rápido.
           </p>
 
-          {/* CTA Button */}
-          <Button asChild size="lg" className="mt-4">
-            <Link href="/auth/signup">
-              COMIENZA AHORA <span className="ml-2">→</span>
-            </Link>
-          </Button>
+          <div className="mt-4 flex flex-col sm:flex-row items-center gap-3">
+            <Button asChild size="lg" variant="outline">
+              <Link href="/login">INICIAR SESION</Link>
+            </Button>
+            <Button asChild size="lg">
+              <Link href="/signup">CREAR CUENTA</Link>
+            </Button>
+          </div>
         </div>
       </main>
     </div>

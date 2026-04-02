@@ -1,14 +1,15 @@
 'use client'
 
+import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 import { Button } from '@/components/ui/button'
-import { LogOut, Home, User, Share2 } from 'lucide-react'
+import { LogOut, Home, User, Link as LinkIcon, LayoutGrid, Orbit } from 'lucide-react'
 
 const NAV_ITEMS = [
   { id: 'inicio', label: 'Inicio', icon: Home },
   { id: 'perfil', label: 'Mi perfil', icon: User },
-  { id: 'tarjeta', label: 'Mi tarjeta', icon: Share2 },
-  { id: 'plantilla', label: 'Plantilla', icon: Share2 },
+  { id: 'botones', label: 'Mis botones', icon: LinkIcon },
+  { id: 'plantilla', label: 'Plantilla', icon: LayoutGrid },
 ]
 
 interface SidebarProps {
@@ -28,7 +29,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
       <div className="p-6 border-b border-border">
         <p className="text-xs font-medium text-muted-foreground mb-2">PANEL</p>
         <h1 className="text-xl font-bold">Dashboard</h1>
-        <p className="text-sm text-muted-foreground mt-2">fabrizio@email.com</p>
+        <p className="text-sm text-muted-foreground mt-2">{user?.email}</p>
       </div>
 
       <nav className="flex-1 overflow-auto p-4 space-y-2">
@@ -55,8 +56,19 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
 
       <div className="p-4 border-t border-border space-y-2">
         <Button
+          asChild
           variant="outline"
-          className="w-full justify-start"
+          className="w-full justify-center"
+        >
+          <Link href="/tarjeta">
+            <Orbit className="w-5 h-5 mr-2" />
+            Mi tarjeta
+          </Link>
+        </Button>
+
+        <Button
+          variant="outline"
+          className="w-full justify-center"
           onClick={handleLogout}
         >
           <LogOut className="w-5 h-5 mr-2" />
