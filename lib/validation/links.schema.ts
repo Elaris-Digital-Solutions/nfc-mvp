@@ -15,7 +15,7 @@ export const updateLinkSchema = z
   .object({
     idempotencyKey: idempotencyKeySchema,
     id: z.string().uuid(),
-    updatedAt: z.string().datetime().optional(),
+    updatedAt: z.string().optional(),
     title: z.string().trim().min(1).max(80).optional(),
     url: z.string().trim().url().optional(),
     icon: linkIconSchema.optional(),
