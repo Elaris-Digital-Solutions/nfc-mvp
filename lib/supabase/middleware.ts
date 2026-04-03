@@ -2,12 +2,22 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 import type { Database } from '@/types/database'
+import { getRouteAccess } from '@/lib/security/route-access'
 import { getSupabaseEnvironment } from '@/lib/supabase/env'
 
 export async function updateSession(request: NextRequest) {
   const env = getSupabaseEnvironment()
+  const pathname = request.nextUrl.pathname
+  const routeAccess = getRouteAccess(pathname)
 
   if (!env) {
+    if (process.env.NODE_ENV === 'production' && routeAccess === 'protected') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      url.searchParams.set('reason', 'config-unavailable')
+      return NextResponse.redirect(url)
+    }
+
     return NextResponse.next({ request })
   }
 
@@ -32,17 +42,13 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const pathname = request.nextUrl.pathname
-  const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup')
-  const isDashboardRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/tarjeta')
-
-  if (!user && isDashboardRoute) {
+  if (!user && routeAccess === 'protected') {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
-  if (user && isAuthRoute) {
+  if (user && routeAccess === 'auth') {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)

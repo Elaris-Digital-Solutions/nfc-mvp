@@ -70,36 +70,35 @@ function buildProfileForm(user: UserProfile | null): ProfileFormState {
   }
 }
 
-type CloudinaryUploadResponse = {
-  secure_url?: string
-  error?: {
-    message?: string
-  }
-}
+type ImageUploadApiResponse =
+  | {
+      success: true
+      data: {
+        url: string
+      }
+    }
+  | {
+      success: false
+      error: {
+        message: string
+      }
+    }
 
 async function uploadImageToCloudinary(file: File): Promise<string> {
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
-
-  if (!cloudName || !uploadPreset) {
-    throw new Error('Falta configuración de Cloudinary en NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME y NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET.')
-  }
-
   const formData = new FormData()
   formData.append('file', file)
-  formData.append('upload_preset', uploadPreset)
 
-  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+  const response = await fetch('/api/uploads/image', {
     method: 'POST',
     body: formData,
   })
 
-  const payload = (await response.json()) as CloudinaryUploadResponse
-  if (!response.ok || !payload.secure_url) {
-    throw new Error(payload.error?.message ?? 'No se pudo subir la imagen.')
+  const payload = (await response.json()) as ImageUploadApiResponse
+  if (!response.ok || !payload.success) {
+    throw new Error(payload.success ? 'No se pudo subir la imagen.' : payload.error.message)
   }
 
-  return payload.secure_url
+  return payload.data.url
 }
 
 function normalizeIcon(icon: string): LinkIcon {

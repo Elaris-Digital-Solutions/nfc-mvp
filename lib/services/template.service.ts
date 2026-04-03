@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { requireAuth } from '@/lib/api/auth'
 import { AppError } from '@/lib/api/errors'
 import { toTemplateId } from '@/lib/mappers/template.mapper'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createSupabaseTemplateRepository } from '@/lib/repositories/template/supabase-template.repository'
 import { templateSelectionSchema } from '@/lib/validation/template.schema'
 import {
   buildIdempotencyStorageKey,
@@ -39,16 +39,12 @@ export const templateService = {
       return cached
     }
 
-    const supabase = await createServerSupabaseClient()
-    const { data: currentProfile, error: currentError } = await supabase
-      .from('profiles')
-      .select('id, updated_at, deleted_at')
-      .eq('id', user.id)
-      .single()
+    const repository = await createSupabaseTemplateRepository()
+    const { data: currentProfile, error: currentError } = await repository.findById(user.id)
 
     if (currentError || !currentProfile || currentProfile.deleted_at) {
       throw new AppError('Profile not found', 'NOT_FOUND', {
-        detail: currentError?.message,
+        detail: currentError,
       })
     }
 
@@ -62,19 +58,15 @@ export const templateService = {
 
     const now = new Date().toISOString()
 
-    const { data: updatedProfile, error: updateError } = await supabase
-      .from('profiles')
-      .update({
-        template_id: toTemplateId(input.selectedTemplate),
-        updated_at: now,
-      })
-      .eq('id', user.id)
-      .select('updated_at')
-      .single()
+    const { data: updatedProfile, error: updateError } = await repository.updateTemplateById(
+      user.id,
+      toTemplateId(input.selectedTemplate),
+      now
+    )
 
     if (updateError || !updatedProfile) {
       throw new AppError('Failed to update template', 'INTERNAL_ERROR', {
-        detail: updateError?.message,
+        detail: updateError,
       })
     }
 

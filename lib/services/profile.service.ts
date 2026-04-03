@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { requireAuth } from '@/lib/api/auth'
 import { AppError } from '@/lib/api/errors'
 import { toBackendProfile, toFrontendProfile, type FrontendProfile } from '@/lib/mappers/profile.mapper'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createSupabaseProfileRepository } from '@/lib/repositories/profile/supabase-profile.repository'
 import { profileUpdateSchema, publicProfileLookupSchema } from '@/lib/validation/profile.schema'
 import {
   buildIdempotencyStorageKey,
@@ -13,10 +13,7 @@ import {
   getIdempotentResult,
   setIdempotentResult,
 } from '@/lib/services/internal/operation-guards'
-import type { Database } from '@/types/database'
 
-type ProfileRow = Database['public']['Tables']['profiles']['Row']
-type ActionButtonRow = Database['public']['Tables']['action_buttons']['Row']
 type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>
 type PublicProfileLookupInput = z.infer<typeof publicProfileLookupSchema>
 
@@ -56,16 +53,12 @@ export const profileService = {
       })
     }
 
-    const supabase = await createServerSupabaseClient()
-    const { data: currentProfile, error: currentError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single()
+    const repository = await createSupabaseProfileRepository()
+    const { data: currentProfile, error: currentError } = await repository.findById(user.id)
 
     if (currentError || !currentProfile) {
       throw new AppError('Profile not found', 'NOT_FOUND', {
-        detail: currentError?.message,
+        detail: currentError,
       })
     }
 
@@ -82,16 +75,14 @@ export const profileService = {
     }
 
     if (input.username) {
-      const { data: conflictProfile, error: conflictError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('username', input.username)
-        .neq('id', user.id)
-        .maybeSingle()
+      const { data: conflictProfile, error: conflictError } = await repository.findUsernameConflict(
+        input.username,
+        user.id
+      )
 
       if (conflictError) {
         throw new AppError('Failed to validate username uniqueness', 'INTERNAL_ERROR', {
-          detail: conflictError.message,
+          detail: conflictError,
         })
       }
 
@@ -107,68 +98,50 @@ export const profileService = {
     const mappedUpdate = toBackendProfile(profilePayload)
     mappedUpdate.updated_at = new Date().toISOString()
 
-    const { data: updatedProfile, error: updateError } = await supabase
-      .from('profiles')
-      .update(mappedUpdate)
-      .eq('id', user.id)
-      .select('*')
-      .single()
+    const { data: updatedProfile, error: updateError } = await repository.updateById(
+      user.id,
+      mappedUpdate
+    )
 
     if (updateError || !updatedProfile) {
       throw new AppError('Failed to update profile', 'INTERNAL_ERROR', {
-        detail: updateError?.message,
+        detail: updateError,
       })
     }
 
-    const { data: links, error: linksError } = await supabase
-      .from('action_buttons')
-      .select('*')
-      .eq('profile_id', user.id)
-      .eq('is_active', true)
-      .is('deleted_at', null)
-      .order('sort_order', { ascending: true })
+    const { data: links, error: linksError } = await repository.listActiveLinks(user.id)
 
     if (linksError) {
       throw new AppError('Failed to fetch profile links', 'INTERNAL_ERROR', {
-        detail: linksError.message,
+        detail: linksError,
       })
     }
 
-    const result = toFrontendProfile(updatedProfile as ProfileRow, (links ?? []) as ActionButtonRow[])
+    const result = toFrontendProfile(updatedProfile, links ?? [])
     setIdempotentResult(idempotencyStorageKey, result)
     return result
   },
 
   async getProfileByUsername(input: PublicProfileLookupInput): Promise<FrontendProfile> {
     const normalizedUsername = input.username.trim().toLowerCase()
-    const supabase = await createServerSupabaseClient()
+    const repository = await createSupabaseProfileRepository()
 
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('username', normalizedUsername)
-      .single()
+    const { data: profile, error: profileError } = await repository.findByUsername(normalizedUsername)
 
     if (profileError || !profile || !profile.is_active || profile.deleted_at) {
       throw new AppError('Profile not found', 'NOT_FOUND', {
-        detail: profileError?.message,
+        detail: profileError,
       })
     }
 
-    const { data: links, error: linksError } = await supabase
-      .from('action_buttons')
-      .select('*')
-      .eq('profile_id', profile.id)
-      .eq('is_active', true)
-      .is('deleted_at', null)
-      .order('sort_order', { ascending: true })
+    const { data: links, error: linksError } = await repository.listActiveLinks(profile.id)
 
     if (linksError) {
       throw new AppError('Failed to fetch profile links', 'INTERNAL_ERROR', {
-        detail: linksError.message,
+        detail: linksError,
       })
     }
 
-    return toFrontendProfile(profile as ProfileRow, (links ?? []) as ActionButtonRow[])
+    return toFrontendProfile(profile, links ?? [])
   },
 }
