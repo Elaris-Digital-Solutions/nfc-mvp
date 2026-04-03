@@ -12,8 +12,10 @@ describe('route access map', () => {
   it('classifies protected routes', () => {
     expect(isProtectedRoute('/dashboard')).toBe(true)
     expect(isProtectedRoute('/dashboard/settings')).toBe(true)
+    expect(isProtectedRoute('/card')).toBe(true)
     expect(isProtectedRoute('/tarjeta')).toBe(true)
     expect(getRouteAccess('/dashboard')).toBe('protected')
+    expect(getRouteAccess('/card')).toBe('protected')
   })
 
   it('defaults to public for unknown routes', () => {

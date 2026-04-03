@@ -22,6 +22,13 @@ Apply this migration in Supabase SQL Editor (or via Supabase CLI) before running
 ## Recommended order
 
 1. Run migration in staging.
-2. Validate login, profile save, links save, public profile route.
-3. Run `npm run migrations:validate` to verify migration naming, transaction wrappers, and README parity.
-4. Run migration in production.
+2. Run `npm run migrations:validate` to verify migration naming, transaction wrappers, and README parity.
+3. Run `npm run check`.
+4. Execute `docs/verification-matrix.md` in staging.
+5. Run migration in production.
+6. Execute production smoke subset from `docs/verification-matrix.md`.
+
+## Operational docs
+
+- `docs/release-runbook.md`
+- `docs/verification-matrix.md`

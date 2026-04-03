@@ -1,7 +1,7 @@
 export type RouteAccess = 'public' | 'auth' | 'protected'
 
 const AUTH_ROUTE_PREFIXES = ['/login', '/signup']
-const PROTECTED_ROUTE_PREFIXES = ['/dashboard', '/tarjeta']
+const PROTECTED_ROUTE_PREFIXES = ['/dashboard', '/card', '/tarjeta']
 
 function matchesRoutePrefix(pathname: string, prefix: string): boolean {
   return pathname === prefix || pathname.startsWith(`${prefix}/`)
