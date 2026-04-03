@@ -23,22 +23,32 @@ export async function generateMetadata({ params }: PublicProfilePageProps): Prom
 
   if (!profile) return { title: 'Perfil no encontrado' }
 
+  const descriptionParts = []
+  if (profile.title) descriptionParts.push(profile.title.trim())
+  if (profile.company) descriptionParts.push(profile.company.trim())
+  if (profile.bio) descriptionParts.push(profile.bio.trim())
+  
+  const fullDescription = descriptionParts.length > 0 
+    ? descriptionParts.join(' · ') 
+    : `Conecta con ${profile.name}`
+
   return {
-    title: `${profile.name} | Identidad Digital`,
-    description: profile.bio || profile.title || `Conecta con ${profile.name}`,
+    title: `${profile.name}`,
+    description: fullDescription,
     openGraph: {
-      title: `${profile.name} | Identidad Digital`,
-      description: profile.bio || profile.title || `Conecta con ${profile.name}`,
+      title: `${profile.name}`,
+      description: fullDescription,
       images: profile.profileImage ? [{ url: profile.profileImage }] : [],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${profile.name} | Identidad Digital`,
-      description: profile.bio || profile.title || `Conecta con ${profile.name}`,
+      title: `${profile.name}`,
+      description: fullDescription,
       images: profile.profileImage ? [profile.profileImage] : [],
     }
   }
 }
+
 
 export default async function PublicProfilePage({ params }: PublicProfilePageProps) {
   noStore()
