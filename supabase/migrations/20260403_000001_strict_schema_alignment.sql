@@ -34,6 +34,38 @@ begin
 end;
 $$;
 
+-- RLS: Block direct user role changes except by admin
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'profiles'
+      and policyname = 'app_profiles_update_role_admin_only'
+  ) then
+    create policy app_profiles_update_role_admin_only
+      on public.profiles
+      for update
+      to authenticated
+      using (
+        (
+          -- Only allow update to role if admin
+          (
+            (auth.uid() = id and (old.role = new.role))
+            or public.app_is_admin()
+          )
+        )
+      )
+      with check (
+        (
+          (auth.uid() = id and (old.role = new.role))
+          or public.app_is_admin()
+        )
+      );
+  end if;
+end;
+$$;
+
 alter table public.profiles add column if not exists created_at timestamptz;
 alter table public.profiles add column if not exists updated_at timestamptz;
 alter table public.profiles add column if not exists deleted_at timestamptz;
