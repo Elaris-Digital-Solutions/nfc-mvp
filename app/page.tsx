@@ -38,12 +38,11 @@ export default function Home() {
 
           {/* Description */}
           <p className="text-lg text-muted-foreground max-w-md mx-auto leading-relaxed">
-            Disena tu identidad digital con plantillas claras, enlaces directos y un panel simple.
-          </p>
+              Eleva tu presencia con una tarjeta que te hace destacar desde el primer contacto.          </p>
 
           <div className="mt-4 flex items-center justify-center">
             <Button asChild size="lg">
-              <Link href="/signup">QUIERO MI TARJETA</Link>
+              <Link href="/signup"> Obtener mi tarjeta</Link>
             </Button>
           </div>
         </div>
