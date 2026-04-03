@@ -5,10 +5,10 @@ export const USERNAME_MAX_LENGTH = 20
 export const usernameRegex = /^[a-z0-9_-]+$/
 
 const idempotencyKeySchema = z.string().trim().min(8).max(128)
-const nullableUrlSchema = z.union([
-  z.string().trim().url(),
-  z.literal('').transform(() => null)
-]).nullable().optional()
+const nullableUrlSchema = z.string().transform(val => {
+  const trimmed = val.trim()
+  return trimmed === '' ? null : trimmed
+}).nullable().optional()
 
 export const usernameSchema = z
   .string()
