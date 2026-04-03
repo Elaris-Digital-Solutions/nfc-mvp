@@ -17,6 +17,10 @@ export interface ProfileRepository {
     username: string,
     excludingProfileId: string
   ): Promise<RepositoryResult<UsernameConflictRow>>
-  updateById(profileId: string, payload: ProfileUpdate): Promise<RepositoryResult<ProfileRow>>
+  updateById(
+    profileId: string,
+    payload: ProfileUpdate,
+    expectedUpdatedAt?: string
+  ): Promise<RepositoryResult<ProfileRow>>
   listActiveLinks(profileId: string): Promise<RepositoryResult<ActionButtonRow[]>>
 }

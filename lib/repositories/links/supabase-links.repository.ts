@@ -64,13 +64,19 @@ export async function createSupabaseLinksRepository(): Promise<LinksRepository> 
       return toResult((data as ActionButtonRow | null) ?? null, error?.message ?? null)
     },
 
-    async updateActiveByIdForProfile(linkId, profileId, payload) {
-      const { data, error } = await supabase
+    async updateActiveByIdForProfile(linkId, profileId, payload, expectedUpdatedAt) {
+      let query = supabase
         .from('action_buttons')
         .update(payload)
         .eq('id', linkId)
         .eq('profile_id', profileId)
         .is('deleted_at', null)
+
+      if (expectedUpdatedAt) {
+        query = query.eq('updated_at', expectedUpdatedAt)
+      }
+
+      const { data, error } = await query
         .select('*')
         .single()
 

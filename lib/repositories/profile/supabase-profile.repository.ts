@@ -44,11 +44,17 @@ export async function createSupabaseProfileRepository(): Promise<ProfileReposito
       return toResult((data as UsernameConflictRow | null) ?? null, error?.message ?? null)
     },
 
-    async updateById(profileId, payload) {
-      const { data, error } = await supabase
+    async updateById(profileId, payload, expectedUpdatedAt) {
+      let query = supabase
         .from('profiles')
         .update(payload)
         .eq('id', profileId)
+
+      if (expectedUpdatedAt) {
+        query = query.eq('updated_at', expectedUpdatedAt)
+      }
+
+      const { data, error } = await query
         .select('*')
         .single()
 

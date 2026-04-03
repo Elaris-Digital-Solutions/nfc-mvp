@@ -1,1 +1,5 @@
-export { default } from '../(dashboard)/card/page'
+import { redirect } from 'next/navigation'
+
+export default function TarjetaPage() {
+	redirect('/card')
+}

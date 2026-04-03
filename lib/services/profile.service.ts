@@ -33,7 +33,7 @@ function isTrustedCloudinaryUrl(url: string | null | undefined): boolean {
 export const profileService = {
   async updateProfile(input: ProfileUpdateInput): Promise<FrontendProfile> {
     const user = await requireAuth()
-    enforceWriteLimit(user.id, PROFILE_UPDATE_OPERATION)
+    await enforceWriteLimit(user.id, PROFILE_UPDATE_OPERATION)
 
     const idempotencyStorageKey = buildIdempotencyStorageKey(
       user.id,
@@ -41,7 +41,7 @@ export const profileService = {
       input.idempotencyKey
     )
 
-    const cachedResult = getIdempotentResult<FrontendProfile>(idempotencyStorageKey)
+    const cachedResult = await getIdempotentResult<FrontendProfile>(idempotencyStorageKey)
     if (cachedResult) {
       return cachedResult
     }
@@ -100,8 +100,13 @@ export const profileService = {
 
     const { data: updatedProfile, error: updateError } = await repository.updateById(
       user.id,
-      mappedUpdate
+      mappedUpdate,
+      input.updatedAt
     )
+
+    if (!updatedProfile && input.updatedAt) {
+      throw new AppError('Profile has changed. Refresh and retry.', 'CONFLICT')
+    }
 
     if (updateError || !updatedProfile) {
       throw new AppError('Failed to update profile', 'INTERNAL_ERROR', {
@@ -118,7 +123,7 @@ export const profileService = {
     }
 
     const result = toFrontendProfile(updatedProfile, links ?? [])
-    setIdempotentResult(idempotencyStorageKey, result)
+    await setIdempotentResult(idempotencyStorageKey, result)
     return result
   },
 

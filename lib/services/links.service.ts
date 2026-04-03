@@ -48,10 +48,10 @@ export const linksService = {
     const user = await requireAuth()
     const operation = 'links.create'
 
-    enforceWriteLimit(user.id, operation)
+    await enforceWriteLimit(user.id, operation)
 
     const idempotencyStorageKey = buildIdempotencyStorageKey(user.id, operation, input.idempotencyKey)
-    const cached = getIdempotentResult<FrontendLink>(idempotencyStorageKey)
+    const cached = await getIdempotentResult<FrontendLink>(idempotencyStorageKey)
     if (cached) {
       return cached
     }
@@ -82,14 +82,24 @@ export const linksService = {
 
     const { data: created, error: createError } = await repository.insert(payload)
 
-    if (createError || !created) {
+    if (createError) {
+      if (createError.toLowerCase().includes('maximum 6 active links')) {
+        throw new AppError('Maximum 6 links allowed', 'CONFLICT')
+      }
+
+      throw new AppError('Failed to create link', 'INTERNAL_ERROR', {
+        detail: createError,
+      })
+    }
+
+    if (!created) {
       throw new AppError('Failed to create link', 'INTERNAL_ERROR', {
         detail: createError,
       })
     }
 
     const result = toFrontendLink(created)
-    setIdempotentResult(idempotencyStorageKey, result)
+    await setIdempotentResult(idempotencyStorageKey, result)
     return result
   },
 
@@ -97,10 +107,10 @@ export const linksService = {
     const user = await requireAuth()
     const operation = 'links.update'
 
-    enforceWriteLimit(user.id, operation)
+    await enforceWriteLimit(user.id, operation)
 
     const idempotencyStorageKey = buildIdempotencyStorageKey(user.id, operation, input.idempotencyKey)
-    const cached = getIdempotentResult<FrontendLink>(idempotencyStorageKey)
+    const cached = await getIdempotentResult<FrontendLink>(idempotencyStorageKey)
     if (cached) {
       return cached
     }
@@ -134,8 +144,13 @@ export const linksService = {
     const { data: updated, error: updateError } = await repository.updateActiveByIdForProfile(
       input.id,
       user.id,
-      patch
+      patch,
+      input.updatedAt
     )
+
+    if (!updated && input.updatedAt) {
+      throw new AppError('Link has changed. Refresh and retry.', 'CONFLICT')
+    }
 
     if (updateError || !updated) {
       throw new AppError('Failed to update link', 'INTERNAL_ERROR', {
@@ -144,7 +159,7 @@ export const linksService = {
     }
 
     const result = toFrontendLink(updated)
-    setIdempotentResult(idempotencyStorageKey, result)
+    await setIdempotentResult(idempotencyStorageKey, result)
     return result
   },
 
@@ -152,10 +167,10 @@ export const linksService = {
     const user = await requireAuth()
     const operation = 'links.delete'
 
-    enforceWriteLimit(user.id, operation)
+    await enforceWriteLimit(user.id, operation)
 
     const idempotencyStorageKey = buildIdempotencyStorageKey(user.id, operation, input.idempotencyKey)
-    const cached = getIdempotentResult<DeleteLinkResult>(idempotencyStorageKey)
+    const cached = await getIdempotentResult<DeleteLinkResult>(idempotencyStorageKey)
     if (cached) {
       return cached
     }
@@ -176,7 +191,7 @@ export const linksService = {
       deletedAt,
     }
 
-    setIdempotentResult(idempotencyStorageKey, result)
+    await setIdempotentResult(idempotencyStorageKey, result)
     return result
   },
 }

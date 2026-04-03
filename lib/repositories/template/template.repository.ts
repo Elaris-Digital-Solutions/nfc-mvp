@@ -14,6 +14,7 @@ export interface TemplateRepository {
   updateTemplateById(
     profileId: string,
     templateId: number,
-    updatedAt: string
+    updatedAt: string,
+    expectedUpdatedAt?: string
   ): Promise<RepositoryResult<TemplateUpdateSnapshot>>
 }

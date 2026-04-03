@@ -18,7 +18,8 @@ export interface LinksRepository {
   updateActiveByIdForProfile(
     linkId: string,
     profileId: string,
-    payload: ActionButtonUpdate
+    payload: ActionButtonUpdate,
+    expectedUpdatedAt?: string
   ): Promise<RepositoryResult<ActionButtonRow>>
   softDeleteByIdForProfile(linkId: string, profileId: string, deletedAt: string): Promise<RepositoryResult<LinkIdRow>>
 }

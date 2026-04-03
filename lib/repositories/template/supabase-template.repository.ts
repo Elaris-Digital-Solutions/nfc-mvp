@@ -26,14 +26,20 @@ export async function createSupabaseTemplateRepository(): Promise<TemplateReposi
       return toResult((data as TemplateProfileSnapshot | null) ?? null, error?.message ?? null)
     },
 
-    async updateTemplateById(profileId, templateId, updatedAt) {
-      const { data, error } = await supabase
+    async updateTemplateById(profileId, templateId, updatedAt, expectedUpdatedAt) {
+      let query = supabase
         .from('profiles')
         .update({
           template_id: templateId,
           updated_at: updatedAt,
         })
         .eq('id', profileId)
+
+      if (expectedUpdatedAt) {
+        query = query.eq('updated_at', expectedUpdatedAt)
+      }
+
+      const { data, error } = await query
         .select('updated_at')
         .single()
 

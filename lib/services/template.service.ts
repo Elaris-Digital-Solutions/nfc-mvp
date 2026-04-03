@@ -26,7 +26,7 @@ const TEMPLATE_UPDATE_OPERATION = 'template.update'
 export const templateService = {
   async setSelectedTemplate(input: TemplateSelectionInput): Promise<TemplateSelectionResult> {
     const user = await requireAuth()
-    enforceWriteLimit(user.id, TEMPLATE_UPDATE_OPERATION)
+    await enforceWriteLimit(user.id, TEMPLATE_UPDATE_OPERATION)
 
     const idempotencyStorageKey = buildIdempotencyStorageKey(
       user.id,
@@ -34,7 +34,7 @@ export const templateService = {
       input.idempotencyKey
     )
 
-    const cached = getIdempotentResult<TemplateSelectionResult>(idempotencyStorageKey)
+    const cached = await getIdempotentResult<TemplateSelectionResult>(idempotencyStorageKey)
     if (cached) {
       return cached
     }
@@ -61,8 +61,13 @@ export const templateService = {
     const { data: updatedProfile, error: updateError } = await repository.updateTemplateById(
       user.id,
       toTemplateId(input.selectedTemplate),
-      now
+      now,
+      input.updatedAt
     )
+
+    if (!updatedProfile && input.updatedAt) {
+      throw new AppError('Template selection is stale. Refresh and retry.', 'CONFLICT')
+    }
 
     if (updateError || !updatedProfile) {
       throw new AppError('Failed to update template', 'INTERNAL_ERROR', {
@@ -75,7 +80,7 @@ export const templateService = {
       updatedAt: updatedProfile.updated_at ?? now,
     }
 
-    setIdempotentResult(idempotencyStorageKey, result)
+    await setIdempotentResult(idempotencyStorageKey, result)
     return result
   },
 }

@@ -66,7 +66,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
           variant="outline"
           className="w-full justify-center h-11 md:h-9 rounded-xl md:rounded-md border-border/70 bg-background/70 text-foreground transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-primary/15 hover:text-foreground active:translate-y-0"
         >
-          <Link href="/tarjeta">
+          <Link href="/card">
             <Orbit className="w-4 h-4 mr-2" />
             Mi tarjeta
           </Link>
