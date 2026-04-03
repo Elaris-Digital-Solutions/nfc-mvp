@@ -25,7 +25,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
   }
 
   return (
-    <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-border bg-background/50 backdrop-blur-sm flex flex-col md:h-screen md:sticky md:top-0">
+    <aside className="w-full md:w-72 border-b md:border-b-0 md:border-r border-border bg-background/50 backdrop-blur-sm flex flex-col md:h-screen md:sticky md:top-0">
       <div className="p-4 border-b border-border">
         <p className="text-xs font-medium text-muted-foreground mb-1.5">PANEL</p>
         <h1 className="text-xl font-bold">Dashboard</h1>

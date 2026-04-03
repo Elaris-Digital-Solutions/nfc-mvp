@@ -365,7 +365,7 @@ export default function DashboardPage() {
         onSectionChange={(section) => setActiveSection(section as DashboardSection)}
       />
       <main className="flex-1 overflow-auto bg-background p-4 md:p-6 animate-in slide-in-from-bottom-4 duration-700 ease-out delay-150 fill-mode-both">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-[1200px] mx-auto lg:px-8 xl:px-22">
           {activeSection === 'inicio' && (
             <div>
               <div className="flex items-center gap-2 mb-4 text-muted-foreground">
