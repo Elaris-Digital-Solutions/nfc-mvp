@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/lib/auth-context'
 import { montserrat } from '@/lib/fonts'
 import './globals.css'
@@ -38,7 +37,6 @@ export default function RootLayout({
         <AuthProvider>
           {children}
         </AuthProvider>
-        <Analytics />
       </body>
     </html>
   )

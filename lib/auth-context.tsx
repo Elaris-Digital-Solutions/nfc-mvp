@@ -37,7 +37,7 @@ interface AuthContextType {
   loading: boolean
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
-  signup: (name: string, email: string, password: string) => Promise<void>
+  signup: (name: string, email: string, password: string, customUsername?: string) => Promise<void>
   logout: () => Promise<void>
   updateProfile: (updates: Partial<UserProfile>) => void
 }
@@ -118,11 +118,23 @@ function getPreferredDisplayName(authUser: User): string {
 }
 
 function buildUsernameCandidates(authUser: User, displayName: string): string[] {
+  const metadata = authUser.user_metadata ?? {}
+  const usernameFromMetadata =
+    typeof metadata.username === 'string' && metadata.username.trim().length > 0
+      ? metadata.username.trim().toLowerCase()
+      : undefined
+
   const base = slugifyUsername(displayName, authUser.email ?? authUser.id).slice(0, 20)
   const suffix = authUser.id.replace(/-/g, '').slice(0, 4)
   const withSuffix = `${base.slice(0, Math.max(3, 20 - (suffix.length + 1)))}-${suffix}`
 
-  return Array.from(new Set([base, withSuffix]))
+  const candidates = []
+  if (usernameFromMetadata) {
+    candidates.push(usernameFromMetadata)
+  }
+  candidates.push(base, withSuffix)
+
+  return Array.from(new Set(candidates))
 }
 
 async function ensureProfileExists(
@@ -322,7 +334,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const signup = async (name: string, email: string, password: string) => {
+  const signup = async (name: string, email: string, password: string, customUsername?: string) => {
     const normalizedName = name.trim()
     const normalizedEmail = email.trim()
     const normalizedPassword = password.trim()
@@ -343,7 +355,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       const supabase = createBrowserSupabaseClient()
-      const username = slugifyUsername(normalizedName, normalizedEmail)
+      const username = customUsername?.trim().toLowerCase() || slugifyUsername(normalizedName, normalizedEmail)
 
       const { data, error } = await supabase.auth.signUp({
         email: normalizedEmail,

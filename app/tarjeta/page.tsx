@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
 
 export default function TarjetaPage() {
-	redirect('/card')
+	redirect('/dashboard/card')
 }

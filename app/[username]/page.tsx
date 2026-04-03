@@ -14,6 +14,32 @@ type PublicProfilePageProps = {
   }>
 }
 
+export async function generateMetadata({ params }: PublicProfilePageProps): Promise<import('next').Metadata> {
+  const { username } = await params
+  
+  const profile = await profileService
+    .getProfileByUsername({ username })
+    .catch(() => null)
+
+  if (!profile) return { title: 'Perfil no encontrado' }
+
+  return {
+    title: `${profile.name} | Identidad Digital`,
+    description: profile.bio || profile.title || `Conecta con ${profile.name}`,
+    openGraph: {
+      title: `${profile.name} | Identidad Digital`,
+      description: profile.bio || profile.title || `Conecta con ${profile.name}`,
+      images: profile.profileImage ? [{ url: profile.profileImage }] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${profile.name} | Identidad Digital`,
+      description: profile.bio || profile.title || `Conecta con ${profile.name}`,
+      images: profile.profileImage ? [profile.profileImage] : [],
+    }
+  }
+}
+
 export default async function PublicProfilePage({ params }: PublicProfilePageProps) {
   noStore()
 

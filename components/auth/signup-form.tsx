@@ -14,16 +14,17 @@ export function SignupForm() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [cardUrl, setCardUrl] = useState('')
   const [formError, setFormError] = useState('')
   const pureWhiteStyle = { color: '#ffffff', opacity: 1, WebkitTextFillColor: '#ffffff' }
-  const isSubmitDisabled = isLoading || !name.trim() || !email.trim() || !password.trim()
+  const isSubmitDisabled = isLoading || !name.trim() || !email.trim() || !password.trim() || !cardUrl.trim()
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setFormError('')
 
     try {
-      await signup(name.trim(), email.trim(), password)
+      await signup(name.trim(), email.trim(), password, cardUrl.trim())
       router.push('/dashboard')
     } catch (error) {
       setFormError(error instanceof Error ? error.message : 'No se pudo crear la cuenta.')
@@ -58,6 +59,20 @@ export function SignupForm() {
               onChange={(e) => setName(e.target.value)}
               required
               autoComplete="name"
+              disabled={isLoading}
+              className="h-11 rounded-lg border-border/60 bg-background/55 backdrop-blur-sm px-4 !text-white placeholder:!text-white placeholder:opacity-100 caret-white"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="cardUrl" className="text-xs uppercase tracking-wider" style={pureWhiteStyle}>Enlace de tu tarjeta</Label>
+            <Input
+              id="cardUrl"
+              type="text"
+              placeholder="Ej: juanperez"
+              value={cardUrl}
+              onChange={(e) => setCardUrl(e.target.value)}
+              required
               disabled={isLoading}
               className="h-11 rounded-lg border-border/60 bg-background/55 backdrop-blur-sm px-4 !text-white placeholder:!text-white placeholder:opacity-100 caret-white"
             />
