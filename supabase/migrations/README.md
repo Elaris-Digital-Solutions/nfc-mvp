@@ -8,6 +8,7 @@ Apply this migration in Supabase SQL Editor (or via Supabase CLI) before running
 - `20260403_000002_concurrency_idempotency.sql`
 - `20260403_000003_domain_rls_and_parity.sql`
 
+
 ## What it aligns
 
 - `profiles`: `deleted_at`, `updated_at`, `username` normalization/uniqueness, defaults, indexes.
