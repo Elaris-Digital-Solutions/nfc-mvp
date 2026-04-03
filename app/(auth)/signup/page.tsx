@@ -2,14 +2,26 @@ import { SignupForm } from '@/components/auth/signup-form'
 
 export default function SignupPage() {
   return (
-    <div className="relative min-h-screen bg-background flex items-center justify-center px-4 py-10 overflow-hidden">
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_0%,_rgba(16,34,63,0.45),_transparent_70%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(50%_50%_at_85%_85%,_rgba(19,43,79,0.35),_transparent_60%)]" />
-        <div className="absolute inset-0 opacity-60 bg-[linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:52px_52px]" />
-      </div>
+    <div className="min-h-screen bg-background">
+      <main className="relative isolate min-h-screen flex items-center justify-center px-4 py-10 overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{
+            backgroundImage:
+              'radial-gradient(ellipse at 50% 50%, rgba(62, 119, 198, 0.24) 0%, rgba(33, 74, 130, 0.14) 40%, transparent 74%), linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 1px, transparent 1px)',
+            backgroundSize: '100% 100%, 30px 30px, 30px 30px',
+            backgroundPosition: 'center, center, center',
+          }}
+        >
+          <div className="absolute left-1/2 top-1/2 h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/18 blur-3xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(95%_80%_at_50%_50%,transparent_56%,rgba(2,8,23,0.2)_100%)]" />
+        </div>
 
-      <SignupForm />
+        <div className="relative z-10 w-full">
+          <SignupForm />
+        </div>
+      </main>
     </div>
   )
 }

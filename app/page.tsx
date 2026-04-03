@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button'
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <div className="animate-in fade-in slide-in-from-top-4 duration-1000 ease-out">
+        <Header />
+      </div>
       
       <main className="relative isolate flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] px-5 sm:px-4 overflow-hidden">
         <div
@@ -22,7 +24,7 @@ export default function Home() {
           <div className="absolute left-1/2 top-1/2 h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/18 blur-3xl" />
           <div className="absolute inset-0 bg-[radial-gradient(95%_80%_at_50%_50%,transparent_56%,rgba(2,8,23,0.2)_100%)]" />
         </div>
-        <div className="relative z-10 w-full max-w-2xl mx-auto flex flex-col items-center justify-center gap-8 text-center py-0 -mt-10 px-1 sm:px-0">
+        <div className="relative z-10 w-full max-w-2xl mx-auto flex flex-col items-center justify-center gap-8 text-center py-0 -mt-10 px-1 sm:px-0 animate-in fade-in zoom-in-95 slide-in-from-bottom-8 duration-1000 ease-out">
           {/* NFC Badge */}
           <NFCBadge />
 
