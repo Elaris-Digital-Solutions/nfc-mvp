@@ -359,7 +359,7 @@ export default function DashboardPage() {
   )
 
   return (
-    <div className="flex h-screen animate-in fade-in duration-700 ease-out">
+    <div className="flex flex-col md:flex-row min-h-screen md:h-screen animate-in fade-in duration-700 ease-out">
       <Sidebar
         activeSection={activeSection}
         onSectionChange={(section) => setActiveSection(section as DashboardSection)}

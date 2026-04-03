@@ -25,14 +25,14 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
   }
 
   return (
-    <aside className="w-64 border-r border-border bg-background/50 backdrop-blur-sm flex flex-col h-screen sticky top-0">
+    <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-border bg-background/50 backdrop-blur-sm flex flex-col md:h-screen md:sticky md:top-0">
       <div className="p-4 border-b border-border">
         <p className="text-xs font-medium text-muted-foreground mb-1.5">PANEL</p>
         <h1 className="text-xl font-bold">Dashboard</h1>
         <p className="text-sm text-muted-foreground mt-1.5 truncate">{user?.email}</p>
       </div>
 
-      <nav className="flex-1 overflow-auto p-3 space-y-1.5">
+      <nav className="flex-1 overflow-auto p-3 grid grid-cols-2 gap-2 md:block md:space-y-1.5 md:p-3">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon
           const isActive = activeSection === item.id
@@ -41,10 +41,10 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
             <button
               key={item.id}
               onClick={() => onSectionChange(item.id)}
-              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-md transition-colors ${
+              className={`w-full flex items-center gap-2.5 px-3 py-3 rounded-xl md:rounded-md transition-colors border border-transparent ${
                 isActive
                   ? 'bg-primary text-primary-foreground'
-                  : 'text-foreground hover:bg-muted'
+                  : 'text-foreground hover:bg-muted/70 md:hover:bg-muted'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -58,7 +58,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
         <Button
           asChild
           variant="outline"
-          className="w-full justify-center h-9"
+          className="w-full justify-center h-11 md:h-9 rounded-xl md:rounded-md"
         >
           <Link href="/tarjeta">
             <Orbit className="w-4 h-4 mr-2" />
@@ -68,7 +68,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
 
         <Button
           variant="outline"
-          className="w-full justify-center h-9"
+          className="w-full justify-center h-11 md:h-9 rounded-xl md:rounded-md"
           onClick={handleLogout}
         >
           <LogOut className="w-4 h-4 mr-2" />
