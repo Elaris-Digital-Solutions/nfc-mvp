@@ -153,6 +153,22 @@ async function ensureProfileExists(
   }
 
   if (existingProfile) {
+    const rawMetadataUsername = typeof authUser.user_metadata?.username === 'string' 
+      ? authUser.user_metadata.username.trim().toLowerCase() 
+      : null
+
+    if (rawMetadataUsername && existingProfile.username !== rawMetadataUsername) {
+      // The trigger likely appended a suffix. Let's try to forcefully claim the exact username they typed.
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ username: rawMetadataUsername })
+        .eq('id', authUser.id)
+
+      if (!updateError) {
+        return { ...existingProfile, username: rawMetadataUsername } as ProfileRow
+      }
+    }
+    
     return existingProfile as ProfileRow
   }
 

@@ -57,8 +57,21 @@ export function DashboardBotonesSection({
                 <Input value={link.title} onChange={(e) => onUpdateLink(link.id, 'title', e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label>URL</Label>
-                <Input value={link.url} onChange={(e) => onUpdateLink(link.id, 'url', e.target.value)} />
+                <Label>URL de destino</Label>
+                <div className="relative flex rounded-md shadow-sm">
+                  <span className="inline-flex items-center rounded-l-md border border-r-0 border-input bg-muted px-3 text-muted-foreground text-sm font-medium">
+                    https://
+                  </span>
+                  <Input
+                    value={link.url.replace(/^https?:\/\//i, '')}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/^https?:\/\//i, '').replace(/\s+/g, '')
+                      onUpdateLink(link.id, 'url', val ? `https://${val}` : '')
+                    }}
+                    placeholder="tudominio.com/ruta"
+                    className="rounded-l-none"
+                  />
+                </div>
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label>Icono</Label>
