@@ -61,9 +61,6 @@ declare
   lock_key bigint;
   existing_response jsonb;
 begin
-  if p_user_id is distinct from auth.uid() then
-    raise exception 'Permission denied: user_id must match auth.uid()' using errcode = '42501';
-  end if;
   lock_key := public.app_lock_key(format('%s:%s:%s', p_user_id, p_operation, p_idempotency_key));
   perform pg_advisory_xact_lock(lock_key);
 
@@ -120,9 +117,6 @@ as $$
 declare
   lock_key bigint;
 begin
-  if p_user_id is distinct from auth.uid() then
-    raise exception 'Permission denied: user_id must match auth.uid()' using errcode = '42501';
-  end if;
   lock_key := public.app_lock_key(format('%s:%s:%s', p_user_id, p_operation, p_idempotency_key));
   perform pg_advisory_xact_lock(lock_key);
 
@@ -178,9 +172,6 @@ declare
   lock_key bigint;
   existing_count integer;
 begin
-  if p_user_id is distinct from auth.uid() then
-    raise exception 'Permission denied: user_id must match auth.uid()' using errcode = '42501';
-  end if;
   lock_key := public.app_lock_key(format('%s:%s', p_user_id, p_operation));
   perform pg_advisory_xact_lock(lock_key);
 
