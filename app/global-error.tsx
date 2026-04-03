@@ -19,8 +19,8 @@ export default function GlobalError({
             margin: 0;
             font-family: ui-monospace, monospace;
             padding: 2rem;
-            background: #fafafa;
-            color: #171717;
+            background: #05070b;
+            color: #f7f9fc;
             font-size: 14px;
             min-height: 100vh;
             display: flex;
@@ -40,8 +40,8 @@ export default function GlobalError({
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #fef2f2;
-            color: #b91c1c;
+            background: #10223f;
+            color: #f7f9fc;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -55,14 +55,14 @@ export default function GlobalError({
             line-height: 1.5;
           }
           .error-message code {
-            background: #e5e5e5;
+            background: #10223f;
             padding: 0.1em 0.3em;
           }
           .error-summary {
             margin: 0.25rem 0 0 2rem;
             padding: 0;
             font-size: 13px;
-            color: #b91c1c;
+            color: #d7e4f9;
             line-height: 1.5;
           }
           .error-details-wrapper {
@@ -72,7 +72,7 @@ export default function GlobalError({
             list-style: none;
             cursor: pointer;
             padding: 0;
-            color: #737373;
+            color: #c8d1de;
             font-size: 12px;
             user-select: none;
             display: flex;
@@ -102,7 +102,8 @@ export default function GlobalError({
           .error-stack {
             margin: 0;
             padding: 1rem;
-            background: #f5f5f5;
+            background: #0a0f16;
+            border: 1px solid #1b2e49;
             overflow: auto;
             max-width: 100%;
             min-width: 0;

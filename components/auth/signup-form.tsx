@@ -23,16 +23,17 @@ export function SignupForm() {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="space-y-6">
+      <div className="space-y-6 rounded-xl border border-border/40 bg-background/90 p-5 sm:p-7">
         <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold">CREAR CUENTA</h1>
+          <p className="text-xs tracking-[0.16em] uppercase text-muted-foreground">VELTRIX</p>
+          <h1 className="text-2xl font-semibold tracking-normal">CREAR CUENTA</h1>
           <p className="text-muted-foreground">Únete a nuestra comunidad</p>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-5">
 
           <div className="space-y-2">
-            <Label htmlFor="name">Nombre Completo</Label>
+            <Label htmlFor="name" className="text-xs uppercase tracking-wider text-muted-foreground">Nombre completo</Label>
             <Input
               id="name"
               type="text"
@@ -40,11 +41,12 @@ export function SignupForm() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               disabled={isLoading}
+              className="h-11 rounded-lg border-border/50 bg-background px-4"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-xs uppercase tracking-wider text-muted-foreground">Email</Label>
             <Input
               id="email"
               type="email"
@@ -52,11 +54,12 @@ export function SignupForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
+              className="h-11 rounded-lg border-border/50 bg-background px-4"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Contraseña</Label>
+            <Label htmlFor="password" className="text-xs uppercase tracking-wider text-muted-foreground">Contraseña</Label>
             <Input
               id="password"
               type="password"
@@ -64,18 +67,19 @@ export function SignupForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
+              className="h-11 rounded-lg border-border/50 bg-background px-4"
             />
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full h-11 rounded-lg font-semibold uppercase tracking-wide" disabled={isLoading}>
             {isLoading ? 'Creando cuenta...' : 'Crear Cuenta'}
           </Button>
         </form>
 
-        <div className="space-y-3 text-center text-sm">
+        <div className="space-y-3 text-center text-sm border-t border-border/30 pt-4">
           <p>
             ¿Ya tienes cuenta?{' '}
-            <Link href="/login" className="font-semibold hover:underline text-primary">
+            <Link href="/login" className="font-semibold hover:underline text-foreground">
               Iniciar sesión
             </Link>
           </p>
