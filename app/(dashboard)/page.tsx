@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
-import { Home, Save, Sparkles, User } from 'lucide-react'
+import { Home, Save, Sparkles } from 'lucide-react'
 import {
   createLinkAction,
   deleteLinkAction,

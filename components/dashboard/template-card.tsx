@@ -1,10 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { Linkedin, MessageCircle } from 'lucide-react'
 import type { TemplateKey } from '@/lib/mappers/template.mapper'
 
 interface TemplateCardProps {
@@ -33,7 +31,6 @@ export function TemplateCard({
   onSelect,
 }: TemplateCardProps) {
   const { user } = useAuth()
-  const [isHovering, setIsHovering] = useState(false)
 
   return (
     <div
