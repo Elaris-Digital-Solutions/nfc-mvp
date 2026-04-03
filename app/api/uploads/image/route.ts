@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/api/auth'
 import { isAppError } from '@/lib/api/errors'
 import {
-  createCloudinarySignature,
   isAllowedImageMimeType,
   MAX_UPLOAD_BYTES,
   requireCloudinaryEnvironment,
@@ -69,20 +68,10 @@ export async function POST(request: Request) {
     }
 
     const cloudinary = requireCloudinaryEnvironment()
-    const timestamp = Math.floor(Date.now() / 1000)
-    const signedParams = {
-      folder: cloudinary.folder,
-      timestamp,
-    }
-
-    const signature = createCloudinarySignature(signedParams, cloudinary.apiSecret)
 
     const cloudinaryBody = new FormData()
     cloudinaryBody.append('file', file)
-    cloudinaryBody.append('folder', cloudinary.folder)
-    cloudinaryBody.append('timestamp', String(timestamp))
-    cloudinaryBody.append('api_key', cloudinary.apiKey)
-    cloudinaryBody.append('signature', signature)
+    cloudinaryBody.append('upload_preset', cloudinary.uploadPreset)
 
     const cloudinaryResponse = await fetch(
       `https://api.cloudinary.com/v1_1/${cloudinary.cloudName}/image/upload`,
