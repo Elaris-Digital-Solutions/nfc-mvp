@@ -1,21 +1,37 @@
-'use client'
+import { unstable_noStore as noStore } from 'next/cache'
+import { notFound, redirect } from 'next/navigation'
 
-import { useAuth } from '@/lib/auth-context'
-import { LinktreeCard } from '@/components/card/linktree-card'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { getSupabaseEnvironment } from '@/lib/supabase/env'
 
-export default function PublicProfilePage() {
-  const { user } = useAuth()
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-2">Perfil no encontrado</h1>
-          <p className="text-muted-foreground">El usuario que buscas no existe o el enlace es inválido.</p>
-        </div>
-      </div>
-    )
+type LegacyProfilePageProps = {
+  params: Promise<{
+    id: string
+  }>
+}
+
+export default async function LegacyProfilePage({ params }: LegacyProfilePageProps) {
+  noStore()
+
+  if (!getSupabaseEnvironment()) {
+    notFound()
   }
 
-  return <LinktreeCard />
+  const { id } = await params
+  const supabase = await createServerSupabaseClient()
+
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('username, is_active, deleted_at')
+    .eq('id', id)
+    .single()
+
+  if (error || !profile || !profile.username || !profile.is_active || profile.deleted_at) {
+    notFound()
+  }
+
+  redirect(`/${profile.username}`)
 }

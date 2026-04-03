@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 import { Button } from '@/components/ui/button'
 import { LogOut, Home, User, Link as LinkIcon, LayoutGrid, Orbit } from 'lucide-react'
@@ -18,10 +19,15 @@ interface SidebarProps {
 }
 
 export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
-  const { user, logout } = useAuth()
+  const { user, logout, isLoading } = useAuth()
+  const router = useRouter()
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    try {
+      await logout()
+    } finally {
+      router.replace('/')
+    }
   }
 
   return (
@@ -58,7 +64,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
         <Button
           asChild
           variant="outline"
-          className="w-full justify-center h-11 md:h-9 rounded-xl md:rounded-md"
+          className="w-full justify-center h-11 md:h-9 rounded-xl md:rounded-md border-border/70 bg-background/70 text-foreground transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-primary/15 hover:text-foreground active:translate-y-0"
         >
           <Link href="/tarjeta">
             <Orbit className="w-4 h-4 mr-2" />
@@ -68,8 +74,9 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
 
         <Button
           variant="outline"
-          className="w-full justify-center h-11 md:h-9 rounded-xl md:rounded-md"
-          onClick={handleLogout}
+          className="w-full justify-center h-11 md:h-9 rounded-xl md:rounded-md border-border/70 bg-background/70 text-foreground transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-primary/15 hover:text-foreground active:translate-y-0"
+          onClick={() => void handleLogout()}
+          disabled={isLoading}
         >
           <LogOut className="w-4 h-4 mr-2" />
           Cerrar sesion

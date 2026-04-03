@@ -14,12 +14,20 @@ export function SignupForm() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [formError, setFormError] = useState('')
   const pureWhiteStyle = { color: '#ffffff', opacity: 1, WebkitTextFillColor: '#ffffff' }
+  const isSubmitDisabled = isLoading || !name.trim() || !email.trim() || !password.trim()
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    await signup(name, email, password)
-    router.push('/dashboard')
+    setFormError('')
+
+    try {
+      await signup(name.trim(), email.trim(), password)
+      router.push('/dashboard')
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : 'No se pudo crear la cuenta.')
+    }
   }
 
   return (
@@ -48,6 +56,8 @@ export function SignupForm() {
               placeholder="Tu nombre"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              required
+              autoComplete="name"
               disabled={isLoading}
               className="h-11 rounded-lg border-border/60 bg-background/55 backdrop-blur-sm px-4 !text-white placeholder:!text-white placeholder:opacity-100 caret-white"
             />
@@ -61,6 +71,8 @@ export function SignupForm() {
               placeholder="tu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
               disabled={isLoading}
               className="h-11 rounded-lg border-border/60 bg-background/55 backdrop-blur-sm px-4 !text-white placeholder:!text-white placeholder:opacity-100 caret-white"
             />
@@ -74,12 +86,21 @@ export function SignupForm() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={8}
+              autoComplete="new-password"
               disabled={isLoading}
               className="h-11 rounded-lg border-border/60 bg-background/55 backdrop-blur-sm px-4 !text-white placeholder:!text-white placeholder:opacity-100 caret-white"
             />
           </div>
 
-          <Button type="submit" className="w-full h-11 rounded-lg font-semibold uppercase tracking-wide shadow-[0_10px_30px_-16px_rgba(14,44,92,0.75)]" disabled={isLoading}>
+          {formError && (
+            <p className="text-sm text-red-300" role="alert">
+              {formError}
+            </p>
+          )}
+
+          <Button type="submit" className="w-full h-11 rounded-lg font-semibold uppercase tracking-wide shadow-[0_10px_30px_-16px_rgba(14,44,92,0.75)]" disabled={isSubmitDisabled}>
             {isLoading ? 'Creando cuenta...' : 'Crear Cuenta'}
           </Button>
         </form>
