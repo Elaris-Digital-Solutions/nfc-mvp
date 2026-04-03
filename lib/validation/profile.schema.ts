@@ -24,7 +24,7 @@ export const publicProfileLookupSchema = z.object({
 
 export const profileUpdateSchema = z.object({
   idempotencyKey: idempotencyKeySchema,
-  updatedAt: z.string().datetime().optional(),
+  updatedAt: z.string().optional(),
   username: usernameSchema.optional(),
   name: z.string().trim().min(1).max(100).optional(),
   email: z.string().trim().email().optional(),
