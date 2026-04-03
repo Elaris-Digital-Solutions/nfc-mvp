@@ -46,6 +46,15 @@ export interface Database {
           updated_at?: string | null
           deleted_at?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: 'action_buttons_profile_id_fkey'
+            columns: ['profile_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       click_events: {
         Row: {
@@ -75,6 +84,22 @@ export interface Database {
           ip_hash?: string | null
           created_at?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: 'click_events_button_id_fkey'
+            columns: ['button_id']
+            isOneToOne: false
+            referencedRelation: 'action_buttons'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'click_events_profile_id_fkey'
+            columns: ['profile_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       nfc_cards: {
         Row: {
@@ -104,6 +129,15 @@ export interface Database {
           notes?: string | null
           created_at?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: 'nfc_cards_profile_id_fkey'
+            columns: ['profile_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -166,6 +200,7 @@ export interface Database {
           updated_at?: string | null
           deleted_at?: string | null
         }
+        Relationships: []
       }
     }
     Views: {
@@ -175,6 +210,9 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
       [_ in never]: never
     }
   }

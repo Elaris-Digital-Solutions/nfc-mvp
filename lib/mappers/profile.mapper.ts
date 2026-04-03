@@ -31,8 +31,15 @@ export type FrontendProfile = {
   updatedAt?: string
 }
 
-export type FrontendProfileUpdate = Partial<Omit<FrontendProfile, 'id' | 'links' | 'selectedTemplate'>> & {
+type FrontendProfileUpdateBase = Omit<
+  FrontendProfile,
+  'id' | 'links' | 'selectedTemplate' | 'profileImage' | 'bannerImage'
+>
+
+export type FrontendProfileUpdate = Partial<FrontendProfileUpdateBase> & {
   selectedTemplate?: TemplateKey
+  profileImage?: string | null
+  bannerImage?: string | null
 }
 
 export type FrontendLinkInput = {
@@ -48,7 +55,7 @@ function toOptionalString(value: string | null | undefined): string | undefined 
   return trimmed.length > 0 ? trimmed : undefined
 }
 
-function toNullableString(value: string | undefined): string | null {
+function toNullableString(value: string | null | undefined): string | null {
   if (!value) return null
 
   const trimmed = value.trim()

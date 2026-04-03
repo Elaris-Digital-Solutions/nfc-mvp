@@ -23,10 +23,13 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
 
   const { username } = await params
 
-  try {
-    const profile = await profileService.getProfileByUsername({ username })
-    return <LinktreeCard profile={profile} />
-  } catch {
+  const profile = await profileService
+    .getProfileByUsername({ username })
+    .catch(() => null)
+
+  if (!profile) {
     notFound()
   }
+
+  return <LinktreeCard profile={profile} />
 }

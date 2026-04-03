@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { useAuth, type UserProfile } from '@/lib/auth-context'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -36,7 +37,7 @@ export function LinktreeCard({ profile }: LinktreeCardProps) {
     )
   }
 
-  const socialIcons: Record<string, JSX.Element> = {
+  const socialIcons: Record<string, ReactNode> = {
     linkedin: <Linkedin className="w-5 h-5" />,
     whatsapp: <MessageCircle className="w-5 h-5" />,
     instagram: <Instagram className="w-5 h-5" />,

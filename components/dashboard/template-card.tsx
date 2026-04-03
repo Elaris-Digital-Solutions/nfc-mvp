@@ -5,9 +5,10 @@ import { useAuth } from '@/lib/auth-context'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Linkedin, MessageCircle } from 'lucide-react'
+import type { TemplateKey } from '@/lib/mappers/template.mapper'
 
 interface TemplateCardProps {
-  id: string
+  id: TemplateKey
   name: string
   category: string
   description: string
@@ -19,7 +20,7 @@ interface TemplateCardProps {
     accent: string
   }
   isSelected: boolean
-  onSelect: (id: string) => void
+  onSelect: (id: TemplateKey) => void
 }
 
 export function TemplateCard({

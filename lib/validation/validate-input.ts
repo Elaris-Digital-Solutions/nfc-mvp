@@ -2,7 +2,10 @@ import { z } from 'zod'
 
 import { AppError } from '@/lib/api/errors'
 
-export function validateInput<T>(schema: z.ZodType<T>, input: unknown): T {
+export function validateInput<TSchema extends z.ZodTypeAny>(
+  schema: TSchema,
+  input: unknown
+): z.output<TSchema> {
   const parsed = schema.safeParse(input)
 
   if (!parsed.success) {
